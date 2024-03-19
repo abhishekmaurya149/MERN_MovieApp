@@ -1,36 +1,49 @@
-// const moviesDB = require("../../model/movie/moviesModel");
-// const cludinary = require("../../cloudinary/cloudinaryConfig");
+const moviesDB = require("../../model/movie/moviesModel");
+const cloudinary = require("../../cloudinary/cloudinaryConfig");
 
-// exports.createmovie = async (req, res) => {
-//   const file = req?.file ? req.file?.path : "";
-//   const { moviename, publishyear } = req.body;
+// Create a new movie
+exports.createMovie = async (req, res) => {
+  // Extract file path, movie name, and publish year from request
+  const file = req?.file ? req?.file?.path : ""; // Use optional chaining to handle undefined properties
+  const { moviename, publishyear } = req.body;
 
-//   if (!file || !moviename || !publishyear) {
-//     res.status(400).json({ error: "all filed are require" });
-//   } else {
-//     try {
-//       const upload = await cludinary?.uploader?.upload(file);
-//       const existingmovie = await moviesDB.fineOne({ moviename: moviename });
+  // Check if any required field is missing
+  if (!file || !moviename || !publishyear) {
+    // If any required field is missing, return a 400 status with an error message
+    res.status(400).json({ error: "All fields are required" });
+  } else {
+    try {
+      // Upload image to cloudinary
+      const upload = await cloudinary?.uploader?.upload(file);
+      
+      // Check if movie with the provided name already exists
+      const existingMovie = await moviesDB.findOne({ moviename: moviename });
 
-//       if (existingmovie) {
-//         res.status(400).json({ error: "already exist" });
-//       } else {
-//         const moviesData = new moviesDB({
-//           userid: req?.userMainId,
-//           moviename,
-//           image: upload?.secure_url,
-//           publishyear,
-//         });
+      if (existingMovie) {
+        // If a movie with the same name already exists, return a 400 status with an error message
+        res.status(400).json({ error: "Movie already exists" });
+      } else {
+        // Create a new movie document
+        const movieData = new moviesDB({
+          userid: req?.userMainId,
+          moviename,
+          image: upload?.secure_url,
+          publishyear,
+        });
 
-//         await moviesData.save();
+        // Save the new movie document to the database
+        await movieData.save();
 
-//         res.status(200).json({ message: "movies sucessfully create" });
-//       }
-//     } catch (error) {
-//       res.status(400).json({ error: EvalError });
-//     }
-//   }
-// };
+        // Return success response if movie is successfully created
+        res.status(200).json({ message: "Movie successfully created" });
+      }
+    } catch (error) {
+      // Return error response if any error occurs during movie creation process
+      res.status(400).json({ error: "Something went wrong" });
+    }
+  }
+};
+ 
 
 // //* getAllusermovie
 // exports.getAllusermovie = async (req, res) => {
