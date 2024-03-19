@@ -46,12 +46,12 @@ exports.createMovie = async (req, res) => {
  
 
 // //* getAllusermovie
-// exports.getAllusermovie = async (req, res) => {
-//   const page = req.query.page || 1;
-//   const serch = req.query.search || "";
-//   const sort = req.query.sort || "";
-//   const ITEM_PER_PAGE = 2;
-// };
+exports.getAllusermovie = async (req, res) => {
+  const page = req.query.page || 1;
+  const serch = req.query.search || "";
+  const sort = req.query.sort || "";
+  const ITEM_PER_PAGE = 2;
+};
 
 // const query = {
 //   moviename: { $regex: search, $options: "i" },

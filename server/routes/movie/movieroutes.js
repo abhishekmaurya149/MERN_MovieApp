@@ -8,7 +8,7 @@ const moviescontrollers =  require("../../controllers/moviescontrollers/moviecon
 // movies routes
 // router.post("/create", [userauthenticate])
 router.post("/create",[userauthenticate, movieupload.single("image")], moviescontrollers.createMovie);
-// router.get("/getallmovie", moviescontrollers.getAllusermovie);
+router.get("/getallmovie", moviescontrollers.getAllusermovie);
 // router.patch("/update/:id", [userauthenticate, movieupload.single("image")],moviescontrollers.updatemovise);
 // router.delete("/delete/:id", userauthenticate,moviescontrollers.deleteMovie);
 // router.get("/details/:id",moviescontrollers.getSingleMove);
