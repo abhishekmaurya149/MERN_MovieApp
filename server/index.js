@@ -17,6 +17,9 @@ app.get('/', (req,res)=>{
 const userAuthRouter = require("./routes/user/userAuthroutes");
 app.use("/userauth/api",userAuthRouter)
 
+// movie routes
+// const moviesroutes = require("./routes/movie/movieroutes");
+// app.use("/movies/api", moviesroutes);
 // Listen app
 app.listen(PORT,()=>{
     console.log(`server start at port no ${PORT}`);
