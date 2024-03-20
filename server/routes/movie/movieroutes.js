@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const userauthenticate = require("../../middleware/userauthenticate");
+const userAuthenticate = require("../../middleware/userauthenticate");
 const movieupload = require("../../multerConfig/movieStorageconfig");
 const moviescontrollers =  require("../../controllers/moviescontrollers/moviecontrollers");
 
 
 // movies routes
-// router.post("/create", [userauthenticate])
-router.post("/create",[userauthenticate, movieupload.single("image")], moviescontrollers.createMovie);
+// router.post("/create", [userAuthenticate])
+router.post("/create",[userAuthenticate, movieupload.single("image")], moviescontrollers.createMovie);
 router.get("/getallmovie", moviescontrollers.getAllusermovie);
-// router.patch("/update/:id", [userauthenticate, movieupload.single("image")],moviescontrollers.updatemovise);
-// router.delete("/delete/:id", userauthenticate,moviescontrollers.deleteMovie);
+router.patch("/update/:id", [userAuthenticate, movieupload.single("image")],moviescontrollers.updateMovies);
+// router.delete("/delete/:id", userAuthenticate,moviescontrollers.deleteMovie);
 // router.get("/details/:id",moviescontrollers.getSingleMove);
 
 

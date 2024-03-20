@@ -15,7 +15,7 @@ exports.createMovie = async (req, res) => {
     try {
       // Upload image to cloudinary
       const upload = await cloudinary?.uploader?.upload(file);
-      
+
       // Check if movie with the provided name already exists
       const existingMovie = await moviesDB.findOne({ moviename: moviename });
 
@@ -43,32 +43,67 @@ exports.createMovie = async (req, res) => {
     }
   }
 };
- 
 
-// //* getAllusermovie
+//* getAllusermovie
 exports.getAllusermovie = async (req, res) => {
   const page = req.query.page || 1;
-  const serch = req.query.search || "";
+  const search = req.query.search || "";
   const sort = req.query.sort || "";
   const ITEM_PER_PAGE = 2;
+
+  const query = {
+    moviename: { $regex: search, $options: "i" },
+  };
+  try {
+    const skip = (page - 1) * ITEM_PER_PAGE; //3-1=2*2=4
+
+    // all movie count
+    const allusermovieCount = await moviesDB.countDocuments(query);
+
+    const allusermoviesData = await moviesDB
+      .find()
+      .find(query)
+      .limit(ITEM_PER_PAGE)
+      .skip(skip)
+      .sort({ _id: sort == "new" ? -1 : 1 }); //-1 descending and 1 ascending
+
+    const pageCount = Math.ceil(allusermovieCount / ITEM_PER_PAGE); //5/2 = 2.5=3
+    res.status(200).json({
+      Pagination: {
+        allusermovieCount,
+        pageCount,
+      },
+      allusermoviesData,
+    });
+  } catch (error) {
+    res.status(400).json({ error: "somthing went wrong in mcontroller!" });
+  }
 };
 
-// const query = {
-//   moviename: { $regex: search, $options: "i" },
-// };
-// try {
-//   const skip = (page - 1) * ITEM_PER_PAGE; //3-1=2*2=4
+//* Update movies
+exports.updateMovies = async(req,res) => {
+  const {id} = req.params;
+  const file = req?.file ? req?.file?.path : "";
+  const {moviename, publishyear, image}  = req.body;
 
-//   // all movie count
-//   const allusermovieCount = await moviesDB.countDocuments(query);
+  var upload;
+  try {
+    if(file){
+      upload = await cloudinary?.uploader?.upload(file);
+    }
 
-//   const allusermoviesData = await moviesDB
-//     .find(query)
-//     .limit(ITEM_PER_PAGE)
-//     .skip(skip)
-//     .sort({ _id: sort == "new" ? -1 : 1 });
+    let dynamicImg = file ? upload?.secure_url : image
 
-//   const pageCount = Math.ceil(allusermovieCount / ITEM_PER_PAGE); //5/2 = 2.5=3
-// } catch (error) {
-//   console.log(error);
-// }
+    const moviesUpdate = await moviesDB.findByIdAndUpdate({_id:id},{
+      userid: req?.userMainId,
+          moviename, 
+          image:dynamicImg,
+          publishyear,
+    },{new:true});
+
+    await moviesUpdate.save();
+    res.status(200).json({message:"movie sucessfully update", moviesUpdate})
+  } catch (error) {
+    res.status(400).json({error:"upload error"});
+  }
+}

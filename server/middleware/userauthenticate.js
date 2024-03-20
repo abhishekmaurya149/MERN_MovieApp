@@ -19,7 +19,8 @@ const userauthenticate =  async (req, res,next) => {
 
         next();
     } catch (error) {
-        response.status(400).json({error:"Unauthorized no token provide"})        
+        res.status(400).json({ error: "sUnauthorized no token provide!" });
+        // res.response.status(400).json({error:"Unauthorized no token provide"})        
     }
 }
 
