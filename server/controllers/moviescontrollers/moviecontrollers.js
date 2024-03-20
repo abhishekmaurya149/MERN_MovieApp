@@ -102,8 +102,24 @@ exports.updateMovies = async(req,res) => {
     },{new:true});
 
     await moviesUpdate.save();
-    res.status(200).json({message:"movie sucessfully update", moviesUpdate})
+    res.status(200).json({message:"Movie Successfully Update", moviesUpdate})
   } catch (error) {
     res.status(400).json({error:"upload error"});
+  }
+}
+
+
+
+
+
+//* Delete Movie
+exports.deleteMovie = async(req,res) => {
+  const {id} = req.params;
+
+  try{
+    const deleteMovieData = await moviesDB.findByIdAndDelete({_id:id});
+    res.status(200).json({message:"Movie Successfully Deleted", deleteMovieData});
+  }catch(error){
+    res.status(400).json({error:"Not Deleted"});
   }
 }
